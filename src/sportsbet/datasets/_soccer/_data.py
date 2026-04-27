@@ -169,7 +169,7 @@ class SoccerDataLoader(BaseDataLoader):
         bsObj = BeautifulSoup(_read_urls_content([MODELLING_URL])[0], features='html.parser')
         element = bsObj.find('script', {'data-target': 'react-app.embeddedData'})
         param_grid = []
-        for item in loads(element.text)['payload']['tree']['items']:
+        for item in loads(element.text)['payload']['codeViewTreeRoute']['tree']['items']:
             if 'fixtures.csv' not in item['path']:
                 league, division, year = item['name'].replace('.csv', '').split('_')
                 param_grid.append(
@@ -192,11 +192,11 @@ class SoccerDataLoader(BaseDataLoader):
             drop=True,
         )
         try:
-            data['date'] = pd.to_datetime(data['date'], format='%d/%m/%Y')
+            data['date'] = pd.to_datetime(data['date'], format='%Y-%m-%d').astype('datetime64[ns]')
         except ValueError:
             with warnings.catch_warnings():
                 warnings.filterwarnings('ignore', category=UserWarning)
-                data['date'] = pd.to_datetime(data['date'], infer_datetime_format=True)
+                data['date'] = pd.to_datetime(data['date'])
         return data
 
     def extract_train_data(
